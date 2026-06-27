@@ -1,18 +1,9 @@
 part of 'page.dart';
 
-class ParallelVersesSheet extends StatelessWidget {
-  final String text;
-  final int book;
-  final int chapter;
-  final int verse;
+class CompareVersesSheet extends StatelessWidget {
+  const CompareVersesSheet({super.key, required this.bibleModel});
 
-  const ParallelVersesSheet({
-    super.key,
-    required this.text,
-    required this.book,
-    required this.chapter,
-    required this.verse,
-  });
+  final Bible bibleModel;
 
   Future<List<Map<String, dynamic>>> _loadParallelData(
     BuildContext context,
@@ -37,9 +28,9 @@ class ParallelVersesSheet extends StatelessWidget {
       // 3. Fetch verses for these versions
       final verses = await isar.bibles
           .filter()
-          .bookEqualTo(book)
-          .chapterEqualTo(chapter)
-          .verseEqualTo(verse)
+          .bookEqualTo(bibleModel.book)
+          .chapterEqualTo(bibleModel.chapter)
+          .verseEqualTo(bibleModel.verse)
           .anyOf(activeAbbrs, (q, String abbr) => q.versionEqualTo(abbr))
           .findAll();
 
@@ -66,56 +57,45 @@ class ParallelVersesSheet extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       height: MediaQuery.of(context).size.height * 0.6,
       child: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Container(
-            width: 40,
-            height: 4,
-            margin: const EdgeInsets.only(bottom: 16),
-            decoration: BoxDecoration(
-              color: theme.dividerColor,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
+          const SizedBox(height: 8),
           Text(
-            "${BibleBooks.getBookAbbrByNumber(book)} $chapter:$verse",
+            "${bibleModel.version.toUpperCase()} - ${BibleBooks.getBookAbbrByNumber(bibleModel.book)} ${bibleModel.chapter}:${bibleModel.verse}",
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           const SizedBox(height: 4),
-          // Text(
-          //   text,
-          //   textAlign: TextAlign.center,
-          //   style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
-          // ),
-          (Globals.bibleVersionLanguage == 'lat')
-              ? GestureDetector(
-                  onTap: () {
-                    // 1. Close the BottomSheet first
-                    Navigator.pop(context);
-                    // 2. Open the Dialog as a standalone route
-                    showDialog(
-                      context: context,
-                      builder: (context) => WordSearchWidget(verseText: text),
-                    );
-                  },
-                  child: Text(
-                    text,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                )
-              : Text(
-                  text,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
+          //(Globals.bibleVersionLanguage == 'lat')
+          //     ? GestureDetector(
+          //         onTap: () {
+          //           Navigator.pop(context);
+          //           showModalBottomSheet(
+          //             context: context,
+          //             isScrollControlled: true,
+          //             shape: const RoundedRectangleBorder(
+          //               borderRadius: BorderRadius.vertical(
+          //                 top: Radius.circular(20),
+          //               ),
+          //             ),
+          //             builder: (context) =>
+          //                 DictionaryWidget(bibleModel: bibleModel),
+          //           );
+          //         },
+          //         child: Text(
+          //           bibleModel.text,
+          //           textAlign: TextAlign.center,
+          //           style: TextStyle(
+          //             fontSize: 14,
+          //             color: colorScheme.onSurfaceVariant,
+          //           ),
+          //         ),
+          //       )
+          Text(
+            bibleModel.text,
+            textAlign: TextAlign.center,
+            style: TextStyle(fontSize: 14, color: colorScheme.onSurfaceVariant),
+          ),
           const SizedBox(height: 8),
-          const Divider(),
           Expanded(
             child: FutureBuilder<List<Map<String, dynamic>>>(
               future: _loadParallelData(context),
@@ -139,36 +119,54 @@ class ParallelVersesSheet extends StatelessWidget {
                   itemCount: results.length,
                   itemBuilder: (context, index) {
                     final item = results[index];
+                    //final abbr = (item['version'] as String).toUpperCase();
+                    //final letter = abbr.isNotEmpty ? abbr[0] : '?';
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 20.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: colorScheme.primaryContainer,
-                              borderRadius: BorderRadius.circular(6),
-                            ),
-                            child: Text(
-                              item['name'].toString().toUpperCase(),
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: colorScheme.onPrimaryContainer,
-                                fontSize: 11,
-                                letterSpacing: 0.5,
-                              ),
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Card(
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: colorScheme.outlineVariant.withValues(
+                              alpha: 0.5,
                             ),
                           ),
-                          const SizedBox(height: 6),
-                          Text(
+                        ),
+                        child: ListTile(
+                          // leading: Padding(
+                          //   padding: const EdgeInsets.symmetric(vertical: 6.0),
+                          //   child: Container(
+                          //     width: 44,
+                          //     height: 44,
+                          //     decoration: BoxDecoration(
+                          //       color: colorScheme.primaryContainer,
+                          //       borderRadius: BorderRadius.circular(10),
+                          //     ),
+                          //     child: Center(
+                          //       child: Text(
+                          //         letter,
+                          //         style: TextStyle(
+                          //           color: colorScheme.onPrimaryContainer,
+                          //           fontWeight: FontWeight.bold,
+                          //           fontSize: 18,
+                          //         ),
+                          //       ),
+                          //     ),
+                          //   ),
+                          // ),
+                          title: Text(
+                            item['name'],
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                          subtitle: Text(
                             item['text'],
-                            style: const TextStyle(fontSize: 16, height: 1.4),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: colorScheme.onSurfaceVariant,
+                            ),
                           ),
-                        ],
+                        ),
                       ),
                     );
                   },
@@ -176,6 +174,8 @@ class ParallelVersesSheet extends StatelessWidget {
               },
             ),
           ),
+          // gap benieth the list of versions
+          const SizedBox(height: 16),
         ],
       ),
     );

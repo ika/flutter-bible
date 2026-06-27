@@ -1,9 +1,9 @@
 import 'package:isar/isar.dart';
 
-part 'bible.g.dart';
+part 'search.g.dart';
 
 @collection
-class Bible {
+class Search {
   Id id = Isar.autoIncrement; // id
   late String version; // Bible version KJV, NIV
   late int book; // book

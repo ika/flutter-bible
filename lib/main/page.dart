@@ -20,12 +20,13 @@ import '../bloc/selectorcount.dart';
 import '../bloc/size.dart';
 import '../bloc/version.dart';
 import '../collections/booklist.dart';
-import '../collections/word.dart';
 import '../constants.dart';
 import '../database.dart';
 import '../fonts/list.dart';
 import '../globals.dart';
 import '../langs/books.dart';
+import '../versions/bottom.dart';
+import '../translate/service.dart';
 
 part 'drawer.dart';
 
@@ -34,8 +35,6 @@ part 'chapter.dart';
 part 'selector.dart';
 
 part 'bottom.dart';
-
-part 'versions.dart';
 
 part 'compare.dart';
 
@@ -71,9 +70,11 @@ class MainPageState extends State<MainPage> {
     super.initState();
 
     final version = context.read<VersionBloc>().state;
+    Globals.bibleVersion = version;
+
     final lang = Constants.bibleVersions[version]?['lang'] ?? 'en';
     Globals.bibleVersionLanguage = lang;
-    debugPrint('Global language set to: $lang');
+    debugPrint("Global language set to: ${Globals.bibleVersionLanguage}");
 
     fetchMainPage();
     Globals.refreshNotifier.addListener(onReturnSuccess);
@@ -235,8 +236,18 @@ class MainPageState extends State<MainPage> {
                       top: Radius.circular(20),
                     ),
                   ),
-                  builder: (context) =>
-                      VersionsBottomSheet(activeVersion: bibleVersion),
+                  builder: (context) => VersionsBottomSheet(
+                    activeVersion: bibleVersion,
+                    onVersionReturnSuccess: ({required String bibleVersion}) {
+                      setState(() {
+                        context.read<VersionBloc>().add(
+                          UpdateVersion(bibleVersion: bibleVersion),
+                        );
+                      });
+                      Navigator.pop(context);
+                      fetchMainPage();
+                    },
+                  ),
                 );
               },
               child: BlocBuilder<VersionBloc, String>(

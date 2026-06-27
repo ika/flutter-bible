@@ -3,6 +3,7 @@ part of 'page.dart';
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
 
+
   /// A helper method to handle navigation elegantly
   void _navigateTo(
     BuildContext context,
@@ -62,19 +63,19 @@ class MainDrawer extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      Globals.appVersion,
-                      style: TextStyle(
-                        color: color.withValues(alpha: 0.85),
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        fontStyle: FontStyle.italic
-                      ),
-                    ),
-                  ),
+                  // const SizedBox(height: 6),
+                  // Align(
+                  //   alignment: Alignment.center,
+                  //   child: Text(
+                  //     Globals.appVersion,
+                  //     style: TextStyle(
+                  //       color: color.withValues(alpha: 0.85),
+                  //       fontSize: 14,
+                  //       fontWeight: FontWeight.w400,
+                  //       fontStyle: FontStyle.italic
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
             ),
@@ -96,7 +97,7 @@ class MainDrawer extends StatelessWidget {
             refresh: true,
           ),
           _buildItem(context, Icons.search, 'Search', '/search'),
-          _buildItem(context, Icons.read_more, 'Dictianary', '/words'),
+          //_buildItem(context, Icons.menu_book, 'Dictionary', '/dict'),
           _buildItem(
             context,
             Icons.font_download,
@@ -104,8 +105,9 @@ class MainDrawer extends StatelessWidget {
             '/fonts',
             refresh: true,
           ),
-          _buildItem(context, Icons.palette, 'Theme', '/theme'),
+          _buildItem(context, Icons.palette, 'Themes', '/themes'),
           _buildItem(context, Icons.book, 'Versions', '/versions'),
+          _buildItem(context, Icons.backup, 'Backup', '/backup'),
         ],
       ),
     );

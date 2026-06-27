@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -29,7 +28,7 @@ class ThemePageState extends State<ThemePage> {
               gradient: LinearGradient(
                 colors: [
                   Theme.of(context).colorScheme.primary,
-                  Theme.of(context).colorScheme.surface
+                  Theme.of(context).colorScheme.surface,
                 ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
@@ -49,45 +48,107 @@ class ThemePageState extends State<ThemePage> {
               );
             },
           ),
-          title: Text('Theme Switcher',
-              style: const TextStyle(fontWeight: FontWeight.w700)),
-          // actions: [
-          //   Switch(
-          //     value: (context.read<ThemeBloc>()) ? true : false,
-          //     onChanged: (bool value) {
-          //       context.read<ThemeBloc>().add(ChangeTheme(value));
-          //     },
-          //   ),
-          // ],
-        ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                'Select a Theme',
-              ),
-              const SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  FilledButton(
-                    onPressed: () => context
-                        .read<ThemeBloc>()
-                        .add(ChangeTheme(isDark: false)),
-                    child: Text('Light'),
-                  ),
-                  const SizedBox(width: 10),
-                  FilledButton(
-                    onPressed: () => context
-                        .read<ThemeBloc>()
-                        .add(ChangeTheme(isDark: true)),
-                    child: Text('Dark'),
-                  ),
-                ],
-              ),
-            ],
+          title: Text(
+            'Theme Switcher',
+            style: const TextStyle(fontWeight: FontWeight.w700),
           ),
+        ),
+        body: BlocBuilder<ThemeBloc, int>(
+          builder: (context, themeState) {
+            final isDark = themeState % 2 == 1;
+            final themeIndex = themeState ~/ 2;
+            final themeNames = [
+              'Blue Delight',
+              'Aqua Blue',
+              'Pink Sakura',
+              'Green Forest',
+              'Sepia',
+            ];
+
+            return Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 100),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    //Text('Select a Theme'),
+                    const SizedBox(height: 20),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: List.generate(5, (index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5),
+                          child: GestureDetector(
+                            onTap: () => context.read<ThemeBloc>().add(
+                              ChangeTheme(
+                                themeNumber: index * 2 + (isDark ? 1 : 0),
+                              ),
+                            ),
+                            child: Container(
+                              width: MediaQuery.of(context).size.width * 0.8,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: themeIndex == index
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(8),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.shadow.withValues(alpha: 0.2),
+                                    blurRadius: 4,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: Center(
+                                child: Text(
+                                  themeNames[index],
+                                  style: TextStyle(
+                                    color: themeIndex == index
+                                        ? Theme.of(
+                                            context,
+                                          ).colorScheme.onPrimary
+                                        : Theme.of(
+                                            context,
+                                          ).colorScheme.onPrimaryContainer,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text('Light'),
+                        Switch(
+                          value: isDark,
+                          onChanged: (value) {
+                            final newState = themeIndex * 2 + (value ? 1 : 0);
+                            context.read<ThemeBloc>().add(
+                              ChangeTheme(themeNumber: newState),
+                            );
+                          },
+                        ),
+                        Text('Dark'),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

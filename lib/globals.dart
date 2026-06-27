@@ -15,8 +15,8 @@ class Globals {
   static List bookMarkList = [];
   static List highLightList = [];
 
-  // Bible version number
-  static int bibleVersion = 0;
+  // Bible version number, e.g. 0 for nvlg, 1 for kjv, etc.
+  static String bibleVersion = '';
 
   // Start with Gospel of John
   static int bibleBookNumber = 43;
@@ -27,7 +27,7 @@ class Globals {
   // Bible language eng or lat
   static String bibleVersionLanguage = 'eng';
 
-  static String appVersion = '1.1.0';
+  //static String appVersion = '1.1.0';
 }
 
 // Create a small subclass to expose the notify method

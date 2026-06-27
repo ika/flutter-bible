@@ -2,32 +2,41 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 
 import '../constants.dart';
 
-String hydratedBlocName = '${Constants.projectName}Theme';
+//-------------------------------------------------------------
+// Theme Bloc
+//-------------------------------------------------------------
 
-// -------------------------------------------------
-// Event
-// -------------------------------------------------
+const String _hydratedBlocName = '${Constants.projectName}Theme';
 
+/// Base class for theme-related events
 abstract class ThemeEvent {}
 
+/// Event to change the theme (dark/light mode)
 class ChangeTheme extends ThemeEvent {
-  ChangeTheme({required this.isDark});
-  final bool isDark;
+  ChangeTheme({required this.themeNumber});
+
+  final int themeNumber;
 }
 
-// -------------------------------------------------
-// Bloc
-// -------------------------------------------------
-class ThemeBloc extends HydratedBloc<ThemeEvent, bool> {
-  ThemeBloc() : super(true) {
-    on<ChangeTheme>((event, emit) {
-      emit(event.isDark ? false : true);
-    });
+/// Bloc for managing the theme setting
+/// reutruns integer
+class ThemeBloc extends HydratedBloc<ThemeEvent, int> {
+  ThemeBloc() : super(8) { // sepiaLight
+    on<ChangeTheme>((event, emit) => emit(event.themeNumber));
   }
 
   @override
-  bool? fromJson(Map<String, dynamic> json) => json[hydratedBlocName] as bool;
+  int? fromJson(Map<String, dynamic> json) {
+    try {
+      return json[_hydratedBlocName] as int?;
+    } catch (e) {
+      return null;
+    }
+  }
 
   @override
-  Map<String, dynamic>? toJson(bool state) => {hydratedBlocName: state};
+  Map<String, dynamic>? toJson(int state) => {_hydratedBlocName: state};
+
+  @override
+  String get id => _hydratedBlocName;
 }

@@ -2,7 +2,7 @@ import 'package:isar/isar.dart';
 
 part 'booklist.g.dart';
 
-@Collection()
+@collection
 class BookList {
   Id id = Isar.autoIncrement;
   late String abbr; // version short name

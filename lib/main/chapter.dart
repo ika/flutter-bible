@@ -1,4 +1,3 @@
-
 part of 'page.dart';
 
 //-------------------------------------------------------------
@@ -6,7 +5,12 @@ part of 'page.dart';
 //-------------------------------------------------------------
 
 class ChapterPage extends StatefulWidget {
-  const ChapterPage({super.key, required this.bibleVersion, required this.bookNumber, required this.chapterIndex});
+  const ChapterPage({
+    super.key,
+    required this.bibleVersion,
+    required this.bookNumber,
+    required this.chapterIndex,
+  });
 
   final String bibleVersion;
   final int bookNumber;
@@ -54,7 +58,9 @@ class _ChapterPageState extends State<ChapterPage> {
 
             int verseToScroll = context.read<VerseBloc>().state;
             if (verseToScroll > 0) {
-              context.read<ScrollBloc>().add(UpdateScroll(index: verseToScroll));
+              context.read<ScrollBloc>().add(
+                UpdateScroll(index: verseToScroll),
+              );
             }
 
             return ScrollablePositionedList.builder(
@@ -68,15 +74,17 @@ class _ChapterPageState extends State<ChapterPage> {
                   return const SizedBox(height: 100);
                 }
                 return ListTile(
-                  //tileColor: thisBackgroundColor(context, chapter.id),
+                  tileColor: thisBackgroundColor(context, chapter.id),
                   title: Text(
                     "${chapter.verse}: ${chapter.text}",
                     style: TextStyle(
-                      height: 1.2,
+                      //height: 1.2,
                       fontFamily: fontsList[context.read<FontBloc>().state],
-                      fontStyle: (context.read<ItalicBloc>().state) ? FontStyle.italic : FontStyle.normal,
+                      fontStyle: (context.read<ItalicBloc>().state)
+                          ? FontStyle.italic
+                          : FontStyle.normal,
                       fontSize: context.read<SizeBloc>().state,
-                      backgroundColor: thisBackgroundColor(context, chapter.id),
+                      //backgroundColor: thisBackgroundColor(context, chapter.id),
                     ),
                     // textAlign: TextAlign.center,
                   ),
@@ -91,12 +99,14 @@ class _ChapterPageState extends State<ChapterPage> {
     );
   }
 
-  void _openBottomSheet(Bible chapter) {
+  void _openBottomSheet(Bible bibleModel) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
-      builder: (context) => BottomSheetWidget(model: chapter),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => BottomSheetWidget(bibleModel: bibleModel),
     );
   }
 
@@ -126,20 +136,24 @@ class _ChapterPageState extends State<ChapterPage> {
     return versesWithPadding;
   }
 
-  Color? thisTileColor(BuildContext context, int id) {
-    if (Globals.bookMarkList.contains(id)) {
-      return Theme.of(context).highlightColor.withValues(alpha: 0.4);
-    } else if (Globals.highLightList.contains(id)) {
-      return Theme.of(context).highlightColor.withValues(alpha: 0.2);
-    }
-    return null;
-  }
+  // Color? thisTileColor(BuildContext context, int id) {
+  //   if (Globals.bookMarkList.contains(id)) {
+  //     return Theme.of(context).highlightColor.withValues(alpha: 0.4);
+  //   } else if (Globals.highLightList.contains(id)) {
+  //     return Theme.of(context).highlightColor.withValues(alpha: 0.2);
+  //   }
+  //   return null;
+  // }
 
   Color? thisBackgroundColor(BuildContext context, int id) {
     if (Globals.bookMarkList.contains(id)) {
-      return Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.4);
+      return Theme.of(
+        context,
+      ).colorScheme.primaryContainer.withValues(alpha: 0.6);
     } else if (Globals.highLightList.contains(id)) {
-      return Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.2);
+      return Theme.of(
+        context,
+      ).colorScheme.primaryContainer.withValues(alpha: 0.4);
     }
     return null;
   }
@@ -150,7 +164,11 @@ class _ChapterPageState extends State<ChapterPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_itemScrollController.isAttached) {
-        _itemScrollController.scrollTo(index: targetVerse - 1, duration: const Duration(milliseconds: 700), curve: Curves.easeInOutCubic);
+        _itemScrollController.scrollTo(
+          index: targetVerse - 1,
+          duration: const Duration(milliseconds: 700),
+          curve: Curves.easeInOutCubic,
+        );
         // Reset the Bloc to 0.
         // Crucial: This ensures that if you swipe away and back,
         // it doesn't jump back to this verse again.

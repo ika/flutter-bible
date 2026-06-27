@@ -1,115 +1,41 @@
 import 'package:flutter/material.dart';
 
-ThemeData lightTheme = ThemeData(
-  useMaterial3: true,
-  colorScheme: lightColorScheme,
-);
+part 'blue_delight.dart';
+part 'aqua_blue.dart';
+part 'pink_sakura.dart';
+part 'green_forest.dart';
+part 'sepia.dart';
 
-ThemeData darkTheme = ThemeData(
-  useMaterial3: true,
-  colorScheme: darkColorScheme,
-);
+ThemeData selectTheme(int themeNumber) {
+  return ThemeData(
+    useMaterial3: true,
+    colorScheme: getColorScheme(themeNumber),
+  );
+}
 
-/// Light [ColorScheme] made with FlexColorScheme v8.4.0.
-/// Requires Flutter 3.22.0 or later.
-const ColorScheme lightColorScheme = ColorScheme(
-  brightness: Brightness.light,
-  primary: Color(0xFF065808),
-  onPrimary: Color(0xFFFFFFFF),
-  primaryContainer: Color(0xFF9EE2A0),
-  onPrimaryContainer: Color(0xFF000000),
-  primaryFixed: Color(0xFFC2E3C3),
-  primaryFixedDim: Color(0xFF90CB92),
-  onPrimaryFixed: Color(0xFF000000),
-  onPrimaryFixedVariant: Color(0xFF010F01),
-  secondary: Color(0xFF365B37),
-  onSecondary: Color(0xFFFFFFFF),
-  secondaryContainer: Color(0xFFAFBDAF),
-  onSecondaryContainer: Color(0xFF000000),
-  secondaryFixed: Color(0xFFD1DED2),
-  secondaryFixedDim: Color(0xFFABC0AC),
-  onSecondaryFixed: Color(0xFF0D150D),
-  onSecondaryFixedVariant: Color(0xFF132014),
-  tertiary: Color(0xFF2C7E2E),
-  onTertiary: Color(0xFFFFFFFF),
-  tertiaryContainer: Color(0xFFB9E6B9),
-  onTertiaryContainer: Color(0xFF000000),
-  tertiaryFixed: Color(0xFFCDE7CE),
-  tertiaryFixedDim: Color(0xFFA4CFA5),
-  onTertiaryFixed: Color(0xFF0D260E),
-  onTertiaryFixedVariant: Color(0xFF123313),
-  error: Color(0xFFB00020),
-  onError: Color(0xFFFFFFFF),
-  errorContainer: Color(0xFFFCD9DF),
-  onErrorContainer: Color(0xFF000000),
-  surface: Color(0xFFFCFCFC),
-  onSurface: Color(0xFF111111),
-  surfaceDim: Color(0xFFE0E0E0),
-  surfaceBright: Color(0xFFFDFDFD),
-  surfaceContainerLowest: Color(0xFFFFFFFF),
-  surfaceContainerLow: Color(0xFFF8F8F8),
-  surfaceContainer: Color(0xFFF3F3F3),
-  surfaceContainerHigh: Color(0xFFEDEDED),
-  surfaceContainerHighest: Color(0xFFE7E7E7),
-  onSurfaceVariant: Color(0xFF393939),
-  outline: Color(0xFF919191),
-  outlineVariant: Color(0xFFD1D1D1),
-  shadow: Color(0xFF000000),
-  scrim: Color(0xFF000000),
-  inverseSurface: Color(0xFF2A2A2A),
-  onInverseSurface: Color(0xFFF1F1F1),
-  inversePrimary: Color(0xFF8FCE91),
-  surfaceTint: Color(0xFF065808),
-);
-
-/// Dark [ColorScheme] made with FlexColorScheme v8.4.0.
-/// Requires Flutter 3.22.0 or later.
-const ColorScheme darkColorScheme = ColorScheme(
-  brightness: Brightness.dark,
-  primary: Color(0xFF629F80),
-  onPrimary: Color(0xFFFFFFFF),
-  primaryContainer: Color(0xFF284134),
-  onPrimaryContainer: Color(0xFFFFFFFF),
-  primaryFixed: Color(0xFFC2E3C3),
-  primaryFixedDim: Color(0xFF90CB92),
-  onPrimaryFixed: Color(0xFF000000),
-  onPrimaryFixedVariant: Color(0xFF010F01),
-  secondary: Color(0xFF81B39A),
-  onSecondary: Color(0xFF000000),
-  secondaryContainer: Color(0xFF4D6B5C),
-  onSecondaryContainer: Color(0xFFFFFFFF),
-  secondaryFixed: Color(0xFFD1DED2),
-  secondaryFixedDim: Color(0xFFABC0AC),
-  onSecondaryFixed: Color(0xFF0D150D),
-  onSecondaryFixedVariant: Color(0xFF132014),
-  tertiary: Color(0xFF88C5A6),
-  onTertiary: Color(0xFF000000),
-  tertiaryContainer: Color(0xFF356C51),
-  onTertiaryContainer: Color(0xFFFFFFFF),
-  tertiaryFixed: Color(0xFFCDE7CE),
-  tertiaryFixedDim: Color(0xFFA4CFA5),
-  onTertiaryFixed: Color(0xFF0D260E),
-  onTertiaryFixedVariant: Color(0xFF123313),
-  error: Color(0xFFCF6679),
-  onError: Color(0xFF000000),
-  errorContainer: Color(0xFFB1384E),
-  onErrorContainer: Color(0xFFFFFFFF),
-  surface: Color(0xFF080808),
-  onSurface: Color(0xFFF1F1F1),
-  surfaceDim: Color(0xFF060606),
-  surfaceBright: Color(0xFF2C2C2C),
-  surfaceContainerLowest: Color(0xFF010101),
-  surfaceContainerLow: Color(0xFF0E0E0E),
-  surfaceContainer: Color(0xFF151515),
-  surfaceContainerHigh: Color(0xFF1D1D1D),
-  surfaceContainerHighest: Color(0xFF282828),
-  onSurfaceVariant: Color(0xFFCACACA),
-  outline: Color(0xFF777777),
-  outlineVariant: Color(0xFF414141),
-  shadow: Color(0xFF000000),
-  scrim: Color(0xFF000000),
-  inverseSurface: Color(0xFFE8E8E8),
-  onInverseSurface: Color(0xFF2A2A2A),
-  inversePrimary: Color(0xFF314A3D),
-  surfaceTint: Color(0xFF629F80),
-);
+ColorScheme getColorScheme(int themeNumber) {
+  switch (themeNumber) {
+    case 0:
+      return blueDelightLight;
+    case 1:
+      return blueDelightDark;
+    case 2:
+      return aquaBlueLight;
+    case 3:
+      return aquaBlueDark;
+    case 4:
+      return pinkSakuraLight;
+    case 5:
+      return pinkSakuraDark;
+    case 6:
+      return greenForestLight;
+    case 7:
+      return greenForestDark;
+    case 8:
+      return sepiaLight;
+    case 9:
+      return sepiaDark;
+    default:
+      return sepiaLight;
+  }
+}

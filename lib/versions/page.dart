@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../collections/booklist.dart';
 import '../bloc/version.dart';
 import '../database.dart';
+import '../globals.dart';
 
 class VersionsPage extends StatefulWidget {
   const VersionsPage({super.key});
@@ -15,6 +16,7 @@ class VersionsPage extends StatefulWidget {
 class VersionsPageState extends State<VersionsPage> {
   List<BookList> _items = [];
   bool _loading = true;
+  String activeVersion = '';
 
   @override
   void initState() {
@@ -26,15 +28,18 @@ class VersionsPageState extends State<VersionsPage> {
     if (!mounted) return;
     setState(() => _loading = true);
     try {
-      final activeVersion = context.read<VersionBloc>().state;
+      activeVersion = context.read<VersionBloc>().state;
       final allItems = await isar.bookLists.where().findAll();
 
       if (!mounted) return;
+      // setState(() {
+      //   _items = allItems.where((item) => item.abbr != activeVersion).toList();
+      // });
       setState(() {
-        _items = allItems.where((item) => item.abbr != activeVersion).toList();
+        _items = allItems.toList();
       });
     } catch (e) {
-      debugPrint('Failed to load book lists: $e');
+      //debugPrint('Failed to load book lists: $e');
       if (mounted) {
         setState(() {
           _items = [];
@@ -56,9 +61,9 @@ class VersionsPageState extends State<VersionsPage> {
       _items[index].active = value;
     });
 
-    debugPrint(
-      'Updating book list: ${_items[index].name} ${_items[index].active}',
-    );
+    // debugPrint(
+    //   'Updating book list: ${_items[index].name} ${_items[index].active}',
+    // );
 
     try {
       await isar.writeTxn(() async {
@@ -87,6 +92,24 @@ class VersionsPageState extends State<VersionsPage> {
 
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(
+          color: Theme.of(context).colorScheme.inversePrimary,
+        ),
+        leading: GestureDetector(
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () {
+              Future.delayed(
+                Duration(milliseconds: Globals.navigatorDelay),
+                () {
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
+                },
+              );
+            },
+          ),
+        ),
         title: const Text(
           'Versions',
           style: TextStyle(fontWeight: FontWeight.bold),
@@ -117,7 +140,7 @@ class VersionsPageState extends State<VersionsPage> {
               padding: const EdgeInsets.all(16),
               itemCount: _items.length,
               itemBuilder: (context, index) {
-                final item = _items[index];
+                final BookList item = _items[index];
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 12.0),
                   child: Card(
@@ -145,7 +168,7 @@ class VersionsPageState extends State<VersionsPage> {
                       subtitle: Padding(
                         padding: const EdgeInsets.only(top: 4.0),
                         child: Text(
-                          '${item.abbr.toUpperCase()} · ${item.language.toUpperCase()}',
+                          activeVersionDisplay(item),
                           style: TextStyle(
                             color: colorScheme.secondary,
                             fontSize: 12,
@@ -174,7 +197,20 @@ class VersionsPageState extends State<VersionsPage> {
                         ),
                       ),
                       value: item.active,
-                      onChanged: (v) => _toggleActive(index, v),
+                      onChanged: (v) {
+                        if (activeVersion != item.abbr) {
+                          _toggleActive(index, v);
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                'You cannot disable active version!',
+                              ),
+                              behavior: SnackBarBehavior.floating,
+                            ),
+                          );
+                        }
+                      },
                       activeTrackColor: colorScheme.primary,
                     ),
                   ),
@@ -182,6 +218,12 @@ class VersionsPageState extends State<VersionsPage> {
               },
             ),
     );
+  }
+
+  String activeVersionDisplay(BookList item) {
+    return (activeVersion == item.abbr)
+        ? '${item.abbr.toUpperCase()} · ${item.language.toUpperCase()} · ( Active Version )'
+        : '${item.abbr.toUpperCase()} · ${item.language.toUpperCase()}';
   }
 
   Widget _buildEmptyState(ColorScheme colorScheme) {

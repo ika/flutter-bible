@@ -14,7 +14,7 @@ import '../bloc/theme.dart';
 import '../search/search.dart';
 import '../theme/apptheme.dart';
 import '../theme/theme.dart';
-import '../words/page.dart';
+import '../dict/page.dart';
 import '../collections/bible.dart';
 import '../collections/booklist.dart';
 import '../collections/cache.dart';
@@ -27,9 +27,9 @@ import '../bloc/verse.dart';
 import '../bloc/version.dart';
 import '../versions/page.dart';
 import '../cache/page.dart';
-import '../collections/word.dart';
+import '../collections/search.dart';
 import '../fonts/fonts.dart';
-
+import '../backup/screen.dart';
 import './constants.dart';
 import './database.dart';
 import './main/page.dart';
@@ -58,7 +58,7 @@ void main() async {
   );
 
   isar = await Isar.open(
-    [BibleSchema, CacheSchema, BookListSchema, WordSchema],
+    [BibleSchema, CacheSchema, BookListSchema, SearchSchema],
     name: 'bible_data',
     directory: dir.path,
   );
@@ -77,7 +77,7 @@ void main() async {
   //-------------------------------------------
   // Check if words are loaded, if not load them
   //-------------------------------------------
-  await ensureWordLoaded();
+  //await ensureWordLoaded();
 
   runApp(const RunApp());
 }
@@ -92,18 +92,18 @@ class RunApp extends StatelessWidget {
   // Returns a list of BlocProviders used by the application.
   //-------------------------------------------
   List<BlocProvider> get _providers => [
-        BlocProvider<VersionBloc>(create: (_) => VersionBloc()),
-        BlocProvider<BookNumberBloc>(create: (_) => BookNumberBloc()),
-        BlocProvider<ChapterBloc>(create: (_) => ChapterBloc()),
-        BlocProvider<VerseBloc>(create: (_) => VerseBloc()),
-        BlocProvider<BookNameBloc>(create: (_) => BookNameBloc()),
-        BlocProvider<FontBloc>(create: (_) => FontBloc()),
-        BlocProvider<ItalicBloc>(create: (_) => ItalicBloc()),
-        BlocProvider<SizeBloc>(create: (_) => SizeBloc()),
-        BlocProvider<ThemeBloc>(create: (_) => ThemeBloc()),
-        BlocProvider<ScrollBloc>(create: (_) => ScrollBloc()),
-        BlocProvider<SelectorCountBloc>(create: (_) => SelectorCountBloc()),
-      ];
+    BlocProvider<VersionBloc>(create: (_) => VersionBloc()),
+    BlocProvider<BookNumberBloc>(create: (_) => BookNumberBloc()),
+    BlocProvider<ChapterBloc>(create: (_) => ChapterBloc()),
+    BlocProvider<VerseBloc>(create: (_) => VerseBloc()),
+    BlocProvider<BookNameBloc>(create: (_) => BookNameBloc()),
+    BlocProvider<FontBloc>(create: (_) => FontBloc()),
+    BlocProvider<ItalicBloc>(create: (_) => ItalicBloc()),
+    BlocProvider<SizeBloc>(create: (_) => SizeBloc()),
+    BlocProvider<ThemeBloc>(create: (_) => ThemeBloc()),
+    BlocProvider<ScrollBloc>(create: (_) => ScrollBloc()),
+    BlocProvider<SelectorCountBloc>(create: (_) => SelectorCountBloc()),
+  ];
 
   //-------------------------------------------
   // Builds the widget tree: MultiBlocProvider with MaterialApp and routes.
@@ -112,24 +112,22 @@ class RunApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: _providers,
-      child: BlocBuilder<ThemeBloc, bool>(
+      child: BlocBuilder<ThemeBloc, int>(
         builder: (context, state) {
           return MaterialApp(
             locale: const Locale('en'),
             debugShowCheckedModeBanner: false,
             title: Constants.projectName,
-            theme: lightTheme,
-            darkTheme: darkTheme,
-            themeMode: state ? ThemeMode.light : ThemeMode.dark,
+            theme: selectTheme(state),
             initialRoute: '/main',
             routes: {
               '/main': (context) => const MainPage(),
               '/cache': (context) => const CachePage(),
               '/fonts': (context) => const FontsPage(),
-              '/theme': (context) => const ThemePage(),
+              '/themes': (context) => const ThemePage(),
               '/versions': (context) => const VersionsPage(),
               '/search': (context) => const SearchPage(),
-              '/words': (context) => const WordsPage(),
+              '/backup': (context) => const IsarBackupScreen(),
             },
           );
         },
@@ -143,8 +141,8 @@ class RunApp extends StatelessWidget {
 // from Constants.bibleVersions if missing.
 //-------------------------------------------
 Future<void> ensureBookListLoaded() async {
-  final alreadyLoaded = await isBookListLoaded();
-  if (alreadyLoaded) {
+  final count = await isBookListLoaded();
+  if (count > 0) {
     debugPrint('Book list is already loaded.');
     return;
   }
@@ -178,9 +176,9 @@ Future<void> ensureBookListLoaded() async {
 //-------------------------------------------
 // Returns whether any book list entries exist in Isar.
 //-------------------------------------------
-Future<bool> isBookListLoaded() async {
+Future<int> isBookListLoaded() async {
   final count = await isar.bookLists.count();
-  return count > 0;
+  return count;
 }
 
 //-------------------------------------------
@@ -201,41 +199,41 @@ Future<void> ensureVersionLoaded(String versionCode) async {
 //-------------------------------------------
 // Ensure words are loaded: checks existing words and inserts from assets.
 //-------------------------------------------
-Future<void> ensureWordLoaded() async {
-  final alreadyLoaded = await isWordLoaded();
-
-  if (alreadyLoaded) {
-    debugPrint('Words are already loaded.');
-    return;
-  }
-
-  debugPrint('Loading words...');
-  final path = 'assets/words.json';
-  final jsonString = await rootBundle.loadString(path);
-  final List<dynamic> data = jsonDecode(jsonString);
-
-  final words = data.map((item) {
-    return Word()
-      ..lat = item['lat']
-      ..eng = item['eng'];
-  }).toList();
-
-  await isar.writeTxn(() async {
-    try {
-      await isar.words.putAll(words);
-    } catch (e) {
-      debugPrint('Error inserting words: $e');
-    }
-  });
-}
+// Future<void> ensureWordLoaded() async {
+//   final alreadyLoaded = await isWordLoaded();
+//
+//   if (alreadyLoaded) {
+//     debugPrint('Words are already loaded.');
+//     return;
+//   }
+//
+//   debugPrint('Loading words...');
+//   final path = 'assets/words.json';
+//   final jsonString = await rootBundle.loadString(path);
+//   final List<dynamic> data = jsonDecode(jsonString);
+//
+//   final words = data.map((item) {
+//     return Dict()
+//       ..lat = item['lat']
+//       ..eng = item['eng'];
+//   }).toList();
+//
+//   await isar.writeTxn(() async {
+//     try {
+//       await isar.dicts.putAll(words);
+//     } catch (e) {
+//       debugPrint('Error inserting words: $e');
+//     }
+//   });
+// }
 
 //-------------------------------------------
 // Returns whether any word entries exist in Isar.
 //-------------------------------------------
-Future<bool> isWordLoaded() async {
-  final count = await isar.words.count();
-  return count > 0;
-}
+// Future<bool> isWordLoaded() async {
+//   final count = await isar.dicts.count();
+//   return count > 0;
+// }
 
 //-------------------------------------------
 // Returns whether the specified Bible version has at least the first verse.
@@ -279,13 +277,13 @@ Future<void> loadBibleVersion(String versionCode) async {
 }
 
 //-------------------------------------------
-// Clear Select Isar collections (currently clears bookLists).
+// Clear Select Isar collections.
 //-------------------------------------------
 Future<void> clearAllData() async {
   await isar.writeTxn(() async {
     //await isar.bibles.clear();
     //await isar.caches.clear();
-    await isar.bookLists.clear();
+    //await isar.bookLists.clear();
     debugPrint('All Isar collections have been cleared.');
   });
 }
