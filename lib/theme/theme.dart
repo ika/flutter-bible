@@ -73,7 +73,6 @@ class ThemePageState extends State<ThemePage> {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    //Text('Select a Theme'),
                     const SizedBox(height: 20),
                     Column(
                       mainAxisAlignment: MainAxisAlignment.center,

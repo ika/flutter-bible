@@ -3,7 +3,6 @@ part of 'page.dart';
 class MainDrawer extends StatelessWidget {
   const MainDrawer({super.key});
 
-
   /// A helper method to handle navigation elegantly
   void _navigateTo(
     BuildContext context,
@@ -35,7 +34,6 @@ class MainDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final color = Theme.of(context).colorScheme.primary;
-    //final textStyle = Theme.of(context).textTheme.bodyLarge;
 
     return Drawer(
       child: ListView(
@@ -63,19 +61,6 @@ class MainDrawer extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // const SizedBox(height: 6),
-                  // Align(
-                  //   alignment: Alignment.center,
-                  //   child: Text(
-                  //     Globals.appVersion,
-                  //     style: TextStyle(
-                  //       color: color.withValues(alpha: 0.85),
-                  //       fontSize: 14,
-                  //       fontWeight: FontWeight.w400,
-                  //       fontStyle: FontStyle.italic
-                  //     ),
-                  //   ),
-                  // ),
                 ],
               ),
             ),
@@ -97,7 +82,6 @@ class MainDrawer extends StatelessWidget {
             refresh: true,
           ),
           _buildItem(context, Icons.search, 'Search', '/search'),
-          //_buildItem(context, Icons.menu_book, 'Dictionary', '/dict'),
           _buildItem(
             context,
             Icons.font_download,

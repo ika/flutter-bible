@@ -1,8 +1,6 @@
 import 'package:flutter/foundation.dart';
 
 class Globals {
-  // static final refreshNotifier = ChangeNotifier();
-
   // Use a private instance with a public getter if you want to be strict,
   // but a simple static final works for this purpose.
   static final refreshNotifier = RefreshNotifier();
@@ -26,8 +24,6 @@ class Globals {
 
   // Bible language eng or lat
   static String bibleVersionLanguage = 'eng';
-
-  //static String appVersion = '1.1.0';
 }
 
 // Create a small subclass to expose the notify method

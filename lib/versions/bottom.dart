@@ -28,6 +28,8 @@ class VersionsBottomSheet extends StatelessWidget {
     final mq = MediaQuery.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    const tileContentPadding = EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+    const leadingSize = 50.0;
     activeVersion.toLowerCase();
 
     return SafeArea(
@@ -46,18 +48,6 @@ class VersionsBottomSheet extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Center(
-                //   child: Container(
-                //     width: 40,
-                //     height: 4,
-                //     margin: const EdgeInsets.only(bottom: 12),
-                //     decoration: BoxDecoration(
-                //       color: Theme.of(context).dividerColor,
-                //       borderRadius: BorderRadius.circular(2),
-                //     ),
-                //   ),
-                // ),
-                //const SizedBox(height: 16),
                 FutureBuilder<List<BookList>>(
                   future: _loadBookLists(),
                   builder: (context, snapshot) {
@@ -71,16 +61,9 @@ class VersionsBottomSheet extends StatelessWidget {
                     }
 
                     final items = snapshot.data ?? [];
-                    // if (items.isEmpty) {
-                    //   return const Padding(
-                    //     padding: EdgeInsets.symmetric(vertical: 24),
-                    //     child: Center(child: Text('No versions found')),
-                    //   );
-                    // }
                     return Column(
                       children: items.map((entry) {
                         final key = entry.abbr.toLowerCase();
-                        //debugPrint('Comparing $activeVersion with $key');
                         return Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -95,9 +78,10 @@ class VersionsBottomSheet extends StatelessWidget {
                                 ),
                               ),
                               child: ListTile(
+                                contentPadding: tileContentPadding,
                                 leading: Container(
-                                  width: 44,
-                                  height: 44,
+                                  width: leadingSize,
+                                  height: leadingSize,
                                   decoration: BoxDecoration(
                                     color: colorScheme.primaryContainer,
                                     borderRadius: BorderRadius.circular(10),
@@ -131,12 +115,10 @@ class VersionsBottomSheet extends StatelessWidget {
                                   final lang = Constants.bibleVersions[key]?['lang'] ?? 'en';
                                   Globals.bibleVersionLanguage = lang;
                                   Globals.bibleVersion = key;
-                                  //debugPrint("Global language set to: ${Globals.bibleVersionLanguage}");
                                   onVersionReturnSuccess(bibleVersion: key);
                                 },
                               ),
                             ),
-                            //const Divider(height: 1),
                           ],
                           );
                       }).toList(),

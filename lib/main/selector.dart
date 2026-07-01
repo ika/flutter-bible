@@ -13,8 +13,6 @@ class MainSelectorState extends State<MainSelector>
 
   late Map<int, String> allBooks;
 
-  //late Map<int, String> filteredBooks;
-
   static const double gridMarginSpacing = 16.0;
   static const double gridSpacing = 6.0;
   static const int gridLineCount = 4;
@@ -107,14 +105,9 @@ class MainSelectorState extends State<MainSelector>
                           return ListTile(
                             title: Text('Verse $chapterNumber'),
                             onTap: () {
-                              // FocusScope.of(context).unfocus();
-                              // Update chapter (stored as zero-based in your blocs)
                               context.read<VerseBloc>().add(
                                 UpdateVerse(verseNumber: i + 1),
                               );
-                              // context.read<ScrollBloc>().add(
-                              //   UpdateScroll(index: i +1 ),
-                              // );
                               Navigator.pop(context);
                             },
                           );
@@ -178,12 +171,9 @@ class MainSelectorState extends State<MainSelector>
                           return ListTile(
                             title: Text('Chapter $chapterNumber'),
                             onTap: () {
-                              //FocusScope.of(context).unfocus();
-                              // Update chapter (stored as zero-based in your blocs)
                               context.read<ChapterBloc>().add(
                                 UpdateChapter(chapterNumber: i),
                               );
-                              // Fetch verse count for this chapter, update selector, then show verses
                               fetchVerseCount(
                                 version: bibleVersion,
                                 book: context.read<BookNumberBloc>().state,
@@ -364,15 +354,8 @@ class MainSelectorState extends State<MainSelector>
                           ),
                         ),
                         onPressed: () {
-                          // FINAL VALUESI
-                          // String nameState = context.read<BookNameBloc>().state;
-                          // int bookNumber = context.read<BookBloc>().state;
                           int chapterState = context.read<ChapterBloc>().state;
                           int verseState = context.read<VerseBloc>().state;
-
-                          // debugPrint(
-                          //   'Name: $nameState, BookNumber: $bookNumber, Chapter: $chapterState, Verse: $verseState',
-                          // );
 
                           context.read<ChapterBloc>().add(
                             UpdateChapter(chapterNumber: chapterState),
@@ -410,35 +393,6 @@ class MainSelectorState extends State<MainSelector>
     return chapterState + 1;
   }
 
-  // Widget buildSquare(String label, VoidCallback onTap) {
-  //   return GestureDetector(
-  //     onTap: onTap,
-  //     child: Container(
-  //       margin: const EdgeInsets.all(4.0),
-  //       decoration: BoxDecoration(
-  //         color: Theme.of(context).colorScheme.inversePrimary,
-  //         borderRadius: BorderRadius.circular(8.0),
-  //         border: Border.all(color: Colors.black26),
-  //         boxShadow: const [
-  //           BoxShadow(
-  //             color: Colors.black12,
-  //             blurRadius: 2,
-  //             offset: Offset(1, 1),
-  //           ),
-  //         ],
-  //       ),
-  //       child: Center(
-  //         child: Text(
-  //           label,
-  //           style: TextStyle(
-  //             fontSize: 16,
-  //             color: Theme.of(context).colorScheme.onSurface,
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 
   // --- CHAPTER COUNT ---
   Future<int> fetchChapterCount({

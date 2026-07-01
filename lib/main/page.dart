@@ -1,7 +1,5 @@
-// dart
 import 'dart:ui';
 
-//import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -25,8 +23,8 @@ import '../database.dart';
 import '../fonts/list.dart';
 import '../globals.dart';
 import '../langs/books.dart';
+import '../translate/page.dart';
 import '../versions/bottom.dart';
-import '../translate/service.dart';
 
 part 'drawer.dart';
 
@@ -52,7 +50,6 @@ class MainPage extends StatefulWidget {
 class MainPageState extends State<MainPage> {
   late String bibleVersion;
   late int bookNumber;
-  //late String bookAbbr;
 
   // Initialize to 0 to show loading state initially
   int totalChapters = 0;
@@ -226,8 +223,6 @@ class MainPageState extends State<MainPage> {
             const SizedBox(width: 8),
             FilledButton(
               onPressed: () {
-                //  String activeVersion = context.read<VersionBloc>().state;
-                // debugPrint('Version: $activeVersion');
                 showModalBottomSheet(
                   context: context,
                   isScrollControlled: true,

@@ -67,7 +67,6 @@ class _ChapterPageState extends State<ChapterPage> {
               itemCount: chapters.length,
               itemScrollController: _itemScrollController,
               addSemanticIndexes: true,
-              //physics: const AlwaysScrollableScrollPhysics(),
               itemBuilder: (BuildContext context, int index) {
                 final chapter = chapters[index];
                 if (chapter.id == -1) {
@@ -78,15 +77,12 @@ class _ChapterPageState extends State<ChapterPage> {
                   title: Text(
                     "${chapter.verse}: ${chapter.text}",
                     style: TextStyle(
-                      //height: 1.2,
                       fontFamily: fontsList[context.read<FontBloc>().state],
                       fontStyle: (context.read<ItalicBloc>().state)
                           ? FontStyle.italic
                           : FontStyle.normal,
                       fontSize: context.read<SizeBloc>().state,
-                      //backgroundColor: thisBackgroundColor(context, chapter.id),
                     ),
-                    // textAlign: TextAlign.center,
                   ),
                   onTap: () => _openBottomSheet(chapter),
                 );
@@ -111,7 +107,6 @@ class _ChapterPageState extends State<ChapterPage> {
   }
 
   Future<List<Bible>> getChapterFuture() async {
-    // debugPrint('BibleVersion: ${widget.bibleVersion}');
     final List<Bible> realVerses = await isar.bibles
         .filter()
         .versionEqualTo(widget.bibleVersion)
@@ -136,14 +131,6 @@ class _ChapterPageState extends State<ChapterPage> {
     return versesWithPadding;
   }
 
-  // Color? thisTileColor(BuildContext context, int id) {
-  //   if (Globals.bookMarkList.contains(id)) {
-  //     return Theme.of(context).highlightColor.withValues(alpha: 0.4);
-  //   } else if (Globals.highLightList.contains(id)) {
-  //     return Theme.of(context).highlightColor.withValues(alpha: 0.2);
-  //   }
-  //   return null;
-  // }
 
   Color? thisBackgroundColor(BuildContext context, int id) {
     if (Globals.bookMarkList.contains(id)) {

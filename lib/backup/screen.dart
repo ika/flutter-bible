@@ -11,7 +11,6 @@ class IsarBackupScreen extends StatefulWidget {
 }
 
 class IsarBackupState extends State<IsarBackupScreen> {
-  //late IsarBackup _backup;
   bool _isProcessing = false;
 
   Future<void> _exportDatabase() async {
@@ -37,32 +36,6 @@ class IsarBackupState extends State<IsarBackupScreen> {
 
     setState(() => _isProcessing = false);
   }
-
-  // Future<void> _changeBackupDirectory() async {
-  //   setState(() => _isProcessing = true);
-
-  //   final result = await IsarBackup().exportDatabase(
-  //     forceSelectDirectory: true,
-  //   );
-  //   final success = result['success'] as bool;
-  //   final error = result['error'] as String?;
-
-  //   if (!mounted) return;
-
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: Text(
-  //         success
-  //             ? 'Backup directory changed and file exported!'
-  //             : 'Failed to change directory: ${error ?? "Unknown error"}',
-  //       ),
-  //       backgroundColor: success ? Colors.green : Colors.red,
-  //       duration: Duration(seconds: success ? 3 : 5),
-  //     ),
-  //   );
-
-  //   setState(() => _isProcessing = false);
-  // }
 
   Future<void> _restoreDatabase() async {
     setState(() => _isProcessing = true);
@@ -227,54 +200,6 @@ class IsarBackupState extends State<IsarBackupScreen> {
                   ),
                 ),
 
-                // const SizedBox(height: 10),
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(vertical: 5),
-                //   child: GestureDetector(
-                //     onTap: _isProcessing ? null : _changeBackupDirectory,
-                //     child: Container(
-                //       width: MediaQuery.of(context).size.width * 0.8,
-                //       height: 50,
-                //       decoration: BoxDecoration(
-                //         color: Theme.of(context).colorScheme.secondaryContainer,
-                //         borderRadius: BorderRadius.circular(8),
-                //         boxShadow: [
-                //           BoxShadow(
-                //             color: Theme.of(
-                //               context,
-                //             ).colorScheme.shadow.withValues(alpha: 0.2),
-                //             blurRadius: 4,
-                //             offset: const Offset(0, 2),
-                //           ),
-                //         ],
-                //       ),
-                //       child: Center(
-                //         child: Row(
-                //           mainAxisAlignment: MainAxisAlignment.center,
-                //           children: [
-                //             Icon(
-                //               Icons.folder_open,
-                //               color: Theme.of(
-                //                 context,
-                //               ).colorScheme.onSecondaryContainer,
-                //             ),
-                //             const SizedBox(width: 8),
-                //             Text(
-                //               'Backup to new Folder',
-                //               style: TextStyle(
-                //                 color: Theme.of(
-                //                   context,
-                //                 ).colorScheme.onSecondaryContainer,
-                //                 fontWeight: FontWeight.bold,
-                //                 fontSize: 16,
-                //               ),
-                //             ),
-                //           ],
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
 
                 const SizedBox(height: 20),
                 if (_isProcessing)

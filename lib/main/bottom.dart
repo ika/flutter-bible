@@ -1,13 +1,5 @@
 part of 'page.dart';
 
-final translator = TranslationService();
-
-Future<String> translateText(String input) async {
-  final response = await translator.translateLatinToEnglish(input);
-  //debugPrint(response);
-  return response.isNotEmpty ? response : 'Response returned empty';
-}
-
 class BottomSheetWidget extends StatelessWidget {
   const BottomSheetWidget({super.key, required this.bibleModel});
 
@@ -15,321 +7,328 @@ class BottomSheetWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final mq = MediaQuery.of(context);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final scaffoldMessenger = ScaffoldMessenger.of(context);
+    const tileContentPadding = EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+    const leadingSize = 50.0;
 
-    //debugPrint("language ${Globals.bibleVersionLanguage}");
-
-    //debugPrint('Bible model: id=${model.id}, book=${model.book}, chapter=${model.chapter}, verse=${model.verse}, version=${model.version}, text=${model.text}');
-
-    return Container(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-      height: MediaQuery.of(context).size.height * 0.5,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-
-        children: [
-          // Container(
-          //   width: 40,
-          //   height: 4,
-          //   margin: const EdgeInsets.only(bottom: 16),
-          //   decoration: BoxDecoration(
-          //     color: theme.dividerColor,
-          //     borderRadius: BorderRadius.circular(2),
-          //   ),
-          // ),
-          const SizedBox(height: 8),
-          Text(
-            "${bibleModel.version.toUpperCase()} - ${BibleBooks.getBookAbbrByNumber(bibleModel.book)} ${bibleModel.chapter}:${bibleModel.verse}",
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          const SizedBox(height: 4),
-          //(Globals.bibleVersionLanguage == 'lat')
-              //? GestureDetector(
-                  // onTap: () {
-                  //   Navigator.pop(context);
-                  //   showModalBottomSheet(
-                  //     context: context,
-                  //     isScrollControlled: true,
-                  //     shape: const RoundedRectangleBorder(
-                  //       borderRadius: BorderRadius.vertical(
-                  //         top: Radius.circular(20),
-                  //       ),
-                  //     ),
-                  //     builder: (context) =>
-                  //         DictionaryWidget(bibleModel: bibleModel),
-                  //   );
-                  // },
-                //   child: Text(
-                //     bibleModel.text,
-                //     textAlign: TextAlign.center,
-                //     style: TextStyle(
-                //       fontSize: 14,
-                //       color: colorScheme.onSurfaceVariant,
-                //     ),
-                //   ),
-                // )
-              Text(
-                  bibleModel.text,
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-          const SizedBox(height: 8),
-          Card(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-              ),
-            ),
-            child: ListTile(
-              //leading: Icon(Icons.compare, color: colorScheme.onPrimaryContainer),
-              leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'C',
-                      style: TextStyle(
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+    return SafeArea(
+      top: false,
+      child: Container(
+        constraints: BoxConstraints(maxHeight: mq.size.height * 0.9),
+        decoration: BoxDecoration(
+          color: Theme.of(context).canvasColor,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.only(bottom: mq.viewInsets.bottom),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Verse info section
+                Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(
+                        alpha: 0.5,
                       ),
                     ),
                   ),
-                ),
-              ),
-              title: const Text('Compare Verse'),
-              onTap: () {
-                Navigator.pop(context);
-                showModalBottomSheet(
-                  context: context,
-                  isScrollControlled: true,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          "${bibleModel.version.toUpperCase()} - ${BibleBooks.getBookAbbrByNumber(bibleModel.book)} ${bibleModel.chapter}:${bibleModel.verse}",
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          bibleModel.text,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  builder: (context) =>
-                      CompareVersesSheet(bibleModel: bibleModel),
-                );
-              },
-            ),
-          ),
-          Card(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-              ),
-            ),
-            child: ListTile(
-              leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'B',
-                      style: TextStyle(
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                ),
+                const SizedBox(height: 16),
+                // Action buttons section
+                Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(
+                        alpha: 0.5,
                       ),
                     ),
                   ),
-                ),
-              ),
-              title: const Text('Bookmark Verse'),
-              onTap: () async {
-                Navigator.pop(context);
-                final existingId = await _getExistingCacheId(1);
-                if (existingId != null) {
-                  scaffoldMessenger.showSnackBar(
-                    const SnackBar(content: Text('Already bookmarked')),
-                  );
-                } else {
-                  await _addCacheEntry(1).then((_) {
-                    if (context.mounted) {
-                      context.read<VerseBloc>().add(
-                        UpdateVerse(verseNumber: bibleModel.verse),
+                  child: ListTile(
+                    contentPadding: tileContentPadding,
+                    leading: Container(
+                      width: leadingSize,
+                      height: leadingSize,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'C',
+                          style: TextStyle(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                    title: Text('Compare Verse'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(20),
+                          ),
+                        ),
+                        builder: (context) =>
+                            CompareVersesSheet(bibleModel: bibleModel),
                       );
-                    }
-                    Globals.refreshNotifier.refresh();
-                    scaffoldMessenger.showSnackBar(
-                      const SnackBar(content: Text('Bookmark saved')),
-                    );
-                  });
-                }
-              },
-            ),
-          ),
-          //const Divider(height: 1),
-          Card(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-              ),
-            ),
-            child: ListTile(
-              //leading: Icon(Icons.compare, color: colorScheme.onPrimaryContainer),
-              leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(10),
+                    },
                   ),
-                  child: Center(
-                    child: Text(
-                      'H',
-                      style: TextStyle(
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                ),
+                Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(
+                        alpha: 0.5,
                       ),
                     ),
                   ),
+                  child: ListTile(
+                    contentPadding: tileContentPadding,
+                    leading: Container(
+                      width: leadingSize,
+                      height: leadingSize,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'B',
+                          style: TextStyle(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                    title: Text('Bookmark Verse'),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      final existingId = await _getExistingCacheId(1);
+                      if (existingId != null) {
+                        scaffoldMessenger.showSnackBar(
+                          const SnackBar(
+                            content: Text('Already bookmarked'),
+                          ),
+                        );
+                      } else {
+                        await _addCacheEntry(1).then((_) {
+                          if (context.mounted) {
+                            context.read<VerseBloc>().add(
+                              UpdateVerse(
+                                verseNumber: bibleModel.verse,
+                              ),
+                            );
+                          }
+                          Globals.refreshNotifier.refresh();
+                          scaffoldMessenger.showSnackBar(
+                            const SnackBar(
+                              content: Text('Bookmark saved'),
+                            ),
+                          );
+                        });
+                      }
+                    },
+                  ),
                 ),
-              ),
-              title: const Text('Highlight Verse'),
-              onTap: () async {
-                Navigator.pop(context);
-                final existingId = await _getExistingCacheId(2);
-                if (existingId != null) {
-                  scaffoldMessenger.showSnackBar(
-                    const SnackBar(content: Text('Already highlighted')),
-                  );
-                } else {
-                  await _addCacheEntry(2).then((_) {
-                    if (context.mounted) {
-                      context.read<VerseBloc>().add(
-                        UpdateVerse(verseNumber: bibleModel.verse),
+                Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
+                  ),
+                  child: ListTile(
+                    contentPadding: tileContentPadding,
+                    leading: Container(
+                      width: leadingSize,
+                      height: leadingSize,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'H',
+                          style: TextStyle(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                    title: Text('Highlight Verse'),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      final existingId = await _getExistingCacheId(2);
+                      if (existingId != null) {
+                        scaffoldMessenger.showSnackBar(
+                          const SnackBar(
+                            content: Text('Already highlighted'),
+                          ),
+                        );
+                      } else {
+                        await _addCacheEntry(2).then((_) {
+                          if (context.mounted) {
+                            context.read<VerseBloc>().add(
+                              UpdateVerse(
+                                verseNumber: bibleModel.verse,
+                              ),
+                            );
+                          }
+                          Globals.refreshNotifier.refresh();
+                          scaffoldMessenger.showSnackBar(
+                            const SnackBar(
+                              content: Text('Highlight saved'),
+                            ),
+                          );
+                        });
+                      }
+                    },
+                  ),
+                ),
+                if(Globals.bibleVersionLanguage == 'lat')
+                Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(
+                        alpha: 0.5,
+                      ),
+                    ),
+                  ),
+                  child: ListTile(
+                    contentPadding: tileContentPadding,
+                    leading: Container(
+                      width: leadingSize,
+                      height: leadingSize,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'T',
+                          style: TextStyle(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                      ),
+                    ),
+                    title: Text('Translate Verse'),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      final String verseText = bibleModel.text;
+                      showDialog(
+                        context: context,
+                        builder: (dialogContext) => TranslationDialog(
+                          verseText: verseText,
+                          reference:
+                              '${BibleBooks.getBookNameByNumber(bibleModel.book)} ${bibleModel.chapter}:${bibleModel.verse}',
+                        ),
                       );
-                    }
-                    Globals.refreshNotifier.refresh();
-                    scaffoldMessenger.showSnackBar(
-                      const SnackBar(content: Text('Highlight saved')),
-                    );
-                  });
-                }
-              },
-            ),
-          ),
-          //const Divider(height: 1),
-          Card(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-              ),
-            ),
-            child: ListTile(
-              //leading: Icon(Icons.compare, color: colorScheme.onPrimaryContainer),
-              leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(10),
+                    },
                   ),
-                  child: Center(
-                    child: Text(
-                      'T',
-                      style: TextStyle(
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                ),
+                Card(
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                      color: colorScheme.outlineVariant.withValues(
+                        alpha: 0.5,
                       ),
                     ),
                   ),
-                ),
-              ),
-              title: const Text('Translate Verse'),
-              onTap: () {
-                Navigator.pop(context);
-                final String verseText = bibleModel.text;
-                showDialog(
-                  context: context,
-                  builder: (dialogContext) => TranslationDialog(
-                    verseText: verseText,
-                    reference:
-                    '${BibleBooks.getBookNameByNumber(bibleModel.book)} ${bibleModel.chapter}:${bibleModel.verse}',
-                  ),
-
-                );
-              },
-            ),
-          ),
-          Card(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(
-                color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-              ),
-            ),
-            child: ListTile(
-              //leading: Icon(Icons.compare, color: colorScheme.onPrimaryContainer),
-              leading: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6.0),
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'C',
-                      style: TextStyle(
-                        color: colorScheme.onPrimaryContainer,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                  child: ListTile(
+                    contentPadding: tileContentPadding,
+                    leading: Container(
+                      width: leadingSize,
+                      height: leadingSize,
+                      decoration: BoxDecoration(
+                        color: colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'C',
+                          style: TextStyle(
+                            color: colorScheme.onPrimaryContainer,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
                       ),
                     ),
+                    title: Text('Copy Verse'),
+                    onTap: () async {
+                      Navigator.pop(context);
+                      final fullText =
+                          '${bibleModel.text} ${BibleBooks.getBookNameByNumber(bibleModel.book)} ${bibleModel.chapter}:${bibleModel.verse}';
+                      Clipboard.setData(ClipboardData(text: fullText));
+                      scaffoldMessenger.showSnackBar(
+                        const SnackBar(content: Text('Text copied')),
+                      );
+                    },
                   ),
                 ),
-              ),
-              title: const Text('Copy Verse'),
-              onTap: () {
-                Navigator.pop(context);
-                final fullText =
-                    '${bibleModel.text} ${BibleBooks.getBookNameByNumber(bibleModel.book)} ${bibleModel.chapter}:${bibleModel.verse}';
-                Clipboard.setData(ClipboardData(text: fullText));
-                scaffoldMessenger.showSnackBar(
-                  const SnackBar(content: Text('Text copied')),
-                );
-              },
+              ],
             ),
           ),
-          //const Divider(height: 1),
-        ],
+        ),
       ),
     );
   }
@@ -356,130 +355,5 @@ class BottomSheetWidget extends StatelessWidget {
       ..text = bibleModel.text
       ..code = code;
     await isar.writeTxn(() => isar.caches.put(entry));
-  }
-}
-
-class TranslationDialog extends StatefulWidget {
-  const TranslationDialog({
-    super.key,
-    required this.verseText,
-    required this.reference,
-  });
-
-  final String verseText;
-  final String reference;
-
-  @override
-  State<TranslationDialog> createState() => _TranslationDialogState();
-}
-
-class _TranslationDialogState extends State<TranslationDialog> {
-  late Future<String> _translationFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _translationFuture = translateText(widget.verseText);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return AlertDialog(
-      icon: Icon(Icons.translate, color: colorScheme.primary),
-      title: Text(
-        widget.reference,
-        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-      ),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                'Original (Latin):',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                widget.verseText,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                'Translation (English):',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.primary,
-                ),
-              ),
-              const SizedBox(height: 8),
-              FutureBuilder<String>(
-                future: _translationFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: SizedBox(
-                        height: 30,
-                        width: 30,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation(
-                            colorScheme.primary,
-                          ),
-                        ),
-                      ),
-                    );
-                  } else if (snapshot.hasError) {
-                    return Text(
-                      'Error: ${snapshot.error}',
-                      style: TextStyle(color: colorScheme.error),
-                    );
-                  } else if (snapshot.hasData) {
-                    return Text(
-                      snapshot.data ?? 'No translation',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: colorScheme.onSurfaceVariant,
-                      ),
-                    );
-                  } else {
-                    return Text(
-                      'No translation available',
-                      style: TextStyle(color: colorScheme.outline),
-                    );
-                  }
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Close'),
-        ),
-        TextButton(
-          onPressed: () {
-            final fullText = '${widget.verseText} (${widget.reference})';
-            Clipboard.setData(ClipboardData(text: fullText));
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(const SnackBar(content: Text('Translation copied')));
-          },
-          child: const Text('Copy'),
-        ),
-      ],
-    );
   }
 }

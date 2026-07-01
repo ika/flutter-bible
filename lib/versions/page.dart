@@ -32,18 +32,13 @@ class VersionsPageState extends State<VersionsPage> {
       final allItems = await isar.bookLists.where().findAll();
 
       if (!mounted) return;
-      // setState(() {
-      //   _items = allItems.where((item) => item.abbr != activeVersion).toList();
-      // });
       setState(() {
         _items = allItems.toList();
       });
     } catch (e) {
-      //debugPrint('Failed to load book lists: $e');
       if (mounted) {
         setState(() {
           _items = [];
-          // _filteredItems = [];
         });
       }
     } finally {
@@ -61,9 +56,6 @@ class VersionsPageState extends State<VersionsPage> {
       _items[index].active = value;
     });
 
-    // debugPrint(
-    //   'Updating book list: ${_items[index].name} ${_items[index].active}',
-    // );
 
     try {
       await isar.writeTxn(() async {
@@ -89,6 +81,8 @@ class VersionsPageState extends State<VersionsPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    const tileContentPadding = EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+    const leadingSize = 50.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -124,13 +118,6 @@ class VersionsPageState extends State<VersionsPage> {
             ),
           ),
         ),
-        // actions: [
-        //   IconButton(
-        //     icon: const Icon(Icons.refresh),
-        //     onPressed: _refresh,
-        //     tooltip: 'Reload',
-        //   ),
-        // ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
@@ -146,7 +133,7 @@ class VersionsPageState extends State<VersionsPage> {
                   child: Card(
                     elevation: 0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(12),
                       side: BorderSide(
                         color: colorScheme.outlineVariant.withValues(
                           alpha: 0.5,
@@ -154,10 +141,7 @@ class VersionsPageState extends State<VersionsPage> {
                       ),
                     ),
                     child: SwitchListTile.adaptive(
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
+                      contentPadding: tileContentPadding,
                       title: Text(
                         item.name,
                         style: const TextStyle(
@@ -177,8 +161,8 @@ class VersionsPageState extends State<VersionsPage> {
                         ),
                       ),
                       secondary: Container(
-                        width: 44,
-                        height: 44,
+                        width: leadingSize,
+                        height: leadingSize,
                         decoration: BoxDecoration(
                           color: colorScheme.primaryContainer,
                           borderRadius: BorderRadius.circular(10),

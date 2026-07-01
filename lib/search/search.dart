@@ -96,10 +96,7 @@ class SearchPageState extends State<SearchPage> {
     }
 
     // Apostrophes and hyphens inside a token are treated as joiners.
-    if ((prevChar == "'" || prevChar == '-') &&
-        prevIndex > 0 &&
-        _isAsciiAlphaNum(text[prevIndex - 1]) &&
-        _isAsciiAlphaNum(text[index])) {
+    if ((prevChar == "'" || prevChar == '-') && prevIndex > 0 && _isAsciiAlphaNum(text[prevIndex - 1]) && _isAsciiAlphaNum(text[index])) {
       return false;
     }
 
@@ -158,9 +155,7 @@ class SearchPageState extends State<SearchPage> {
           .textContains(originalQuery, caseSensitive: false)
           .findAll();
 
-      final filtered = candidateResults
-          .where((verse) => _hasWordPrefixMatch(verse.text, originalQuery))
-          .toList();
+      final filtered = candidateResults.where((verse) => _hasWordPrefixMatch(verse.text, originalQuery)).toList();
 
       await isar.writeTxn(() async {
         await isar.searchs.clear();
@@ -188,7 +183,7 @@ class SearchPageState extends State<SearchPage> {
       });
     }
   }
-  
+
   void _clearSearchResults() {
     saveSearchQuery('');
     isar.writeTxn(() async {
@@ -204,70 +199,83 @@ class SearchPageState extends State<SearchPage> {
   void _showCategorySelector() {
     showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
       builder: (context) {
-        final cs = Theme.of(context).colorScheme;
+        final mq = MediaQuery.of(context);
+        final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+        const tileContentPadding = EdgeInsets.symmetric(horizontal: 16, vertical: 8);
+        const leadingSize = 50.0;
         final cats = _categories.keys.toList();
-        final maxHeight = MediaQuery.of(context).size.height * 0.6;
 
         return SafeArea(
-          child: SizedBox(
-            height: maxHeight,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // optional drag handle
-                Container(
-                  width: 40,
-                  height: 4,
-                  margin: const EdgeInsets.only(top: 8, bottom: 8),
-                  decoration: BoxDecoration(
-                    color: cs.onSurface.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-                Expanded(
-                  child: ListView.separated(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    itemCount: cats.length,
-                    separatorBuilder: (_, _) => const Divider(height: 0),
-                    itemBuilder: (context, index) {
-                      final cat = cats[index];
-                      final isSelected = _selectedCategory == cat;
-                      return ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: isSelected
-                              ? cs.primaryContainer
-                              : cs.surfaceContainerHighest,
-                          radius: 18,
-                          child: Text(
-                            cat.isNotEmpty ? cat[0].toUpperCase() : '?',
-                            style: TextStyle(
-                              color: isSelected
-                                  ? cs.onPrimaryContainer
-                                  : cs.onSurface,
-                              fontWeight: FontWeight.bold,
+          top: false,
+          child: Container(
+            constraints: BoxConstraints(maxHeight: mq.size.height * 0.9),
+            decoration: BoxDecoration(
+              color: theme.canvasColor,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            ),
+            child: SingleChildScrollView(
+              padding: EdgeInsets.only(bottom: mq.viewInsets.bottom),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: cats.map((cat) {
+                    final isSelected = _selectedCategory == cat;
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Card(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(color: colorScheme.outlineVariant.withValues(alpha: 0.5)),
+                          ),
+                          child: ListTile(
+                            contentPadding: tileContentPadding,
+                            leading: Container(
+                              width: leadingSize,
+                              height: leadingSize,
+                              decoration: BoxDecoration(
+                                color: isSelected ? colorScheme.primaryContainer : colorScheme.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  cat.isNotEmpty ? cat[0].toUpperCase() : '?',
+                                  style: TextStyle(
+                                    color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18,
+                                  ),
+                                ),
+                              ),
                             ),
+                            title: Text(cat),
+                            subtitle: Text('${_categories[cat]?.length ?? 0} books'),
+                            selected: isSelected,
+                            trailing: isSelected ? Icon(Icons.check, color: theme.primaryColor) : null,
+                            onTap: () {
+                              setState(() {
+                                _selectedCategory = cat;
+                              });
+                              Navigator.pop(context);
+                              if (_searchController.text.isNotEmpty) {
+                                _performSearch();
+                              }
+                            },
                           ),
                         ),
-                        title: Text(cat),
-                        trailing: isSelected ? const Icon(Icons.check) : null,
-                        onTap: () {
-                          setState(() {
-                            _selectedCategory = cat;
-                          });
-                          Navigator.pop(context);
-                          if (_searchController.text.isNotEmpty) {
-                            _performSearch();
-                          }
-                        },
-                      );
-                    },
-                  ),
+                        const SizedBox(height: 8),
+                      ],
+                    );
+                  }).toList(),
                 ),
-              ],
+              ),
             ),
           ),
         );
@@ -285,11 +293,7 @@ class SearchPageState extends State<SearchPage> {
     );
   }
 
-  RichText _buildHighlightedRichText(
-    String text,
-    String query,
-    BuildContext context,
-  ) {
+  RichText _buildHighlightedRichText(String text, String query, BuildContext context) {
     if (query.isEmpty) {
       return RichText(
         text: TextSpan(
@@ -306,18 +310,14 @@ class SearchPageState extends State<SearchPage> {
     int start = 0;
     int indexOfHighlight;
 
-    while ((indexOfHighlight = lowercaseText.indexOf(lowercaseQuery, start)) !=
-        -1) {
+    while ((indexOfHighlight = lowercaseText.indexOf(lowercaseQuery, start)) != -1) {
       if (indexOfHighlight > start) {
         spans.add(TextSpan(text: text.substring(start, indexOfHighlight)));
       }
 
       spans.add(
         TextSpan(
-          text: text.substring(
-            indexOfHighlight,
-            indexOfHighlight + query.length,
-          ),
+          text: text.substring(indexOfHighlight, indexOfHighlight + query.length),
           style: TextStyle(
             backgroundColor: Theme.of(context).colorScheme.primaryContainer,
             fontWeight: FontWeight.bold,
@@ -335,10 +335,7 @@ class SearchPageState extends State<SearchPage> {
 
     return RichText(
       text: TextSpan(
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onSurface,
-          fontSize: 16,
-        ),
+        style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
         children: spans,
       ),
     );
@@ -350,21 +347,16 @@ class SearchPageState extends State<SearchPage> {
 
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(
-          color: Theme.of(context).colorScheme.inversePrimary,
-        ),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.inversePrimary),
         leading: GestureDetector(
           child: IconButton(
             icon: const Icon(Icons.arrow_back),
             onPressed: () {
-              Future.delayed(
-                Duration(milliseconds: Globals.navigatorDelay),
-                () {
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                  }
-                },
-              );
+              Future.delayed(Duration(milliseconds: Globals.navigatorDelay), () {
+                if (context.mounted) {
+                  Navigator.pop(context);
+                }
+              });
             },
           ),
         ),
@@ -374,16 +366,12 @@ class SearchPageState extends State<SearchPage> {
             showModalBottomSheet(
               context: context,
               isScrollControlled: true,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
+              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
               builder: (context) => VersionsBottomSheet(
                 activeVersion: Globals.bibleVersion,
                 onVersionReturnSuccess: ({required String bibleVersion}) {
                   setState(() {
-                    context.read<VersionBloc>().add(
-                      UpdateVersion(bibleVersion: bibleVersion),
-                    );
+                    context.read<VersionBloc>().add(UpdateVersion(bibleVersion: bibleVersion));
                   });
                   Navigator.pop(context);
                 },
@@ -394,12 +382,12 @@ class SearchPageState extends State<SearchPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.clear_all),
+            icon: Icon(Icons.clear_all, color: colorScheme.primary),
             onPressed: _clearSearchResults,
             tooltip: 'Clear Search',
           ),
           IconButton(
-            icon: const Icon(Icons.filter_list),
+            icon: Icon(Icons.filter_list, color: colorScheme.primary),
             onPressed: _showCategorySelector,
             tooltip: 'Select Category',
           ),
@@ -433,28 +421,17 @@ class SearchPageState extends State<SearchPage> {
                       // outline border + focused/disabled variants
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(
-                          color: colorScheme.outline,
-                          width: 1,
-                        ),
+                        borderSide: BorderSide(color: colorScheme.outline, width: 1),
                       ),
                       enabledBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(
-                          color: colorScheme.outline,
-                          width: 1,
-                        ),
+                        borderSide: BorderSide(color: colorScheme.outline, width: 1),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide(
-                          color: colorScheme.primary,
-                          width: 2,
-                        ),
+                        borderSide: BorderSide(color: colorScheme.primary, width: 2),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(
-                        vertical: 12.0,
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
                     ),
                     onSubmitted: (_) => _performSearch(),
                   ),
@@ -466,10 +443,7 @@ class SearchPageState extends State<SearchPage> {
             padding: const EdgeInsets.all(8.0),
             child: Text(
               'Category: $_selectedCategory',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: colorScheme.primary,
-              ),
+              style: TextStyle(fontWeight: FontWeight.bold, color: colorScheme.primary),
             ),
           ),
           Expanded(
@@ -482,30 +456,15 @@ class SearchPageState extends State<SearchPage> {
                     separatorBuilder: (context, index) => const Divider(),
                     itemBuilder: (context, index) {
                       final bible = _results[index];
-                      final bookName = BibleBooks.getBookNameByNumber(
-                        bible.book,
-                      );
+                      final bookName = BibleBooks.getBookNameByNumber(bible.book);
                       return ListTile(
-                        title: Text(
-                          '$bookName ${bible.chapter}:${bible.verse}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        subtitle: _highlightText(
-                          bible.text,
-                          _searchQuery,
-                          context,
-                        ),
+                        title: Text('$bookName ${bible.chapter}:${bible.verse}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                        subtitle: _highlightText(bible.text, _searchQuery, context),
                         onTap: () {
                           // Navigate to the specific verse
-                          context.read<BookNumberBloc>().add(
-                            UpdateBook(bibleBookNumber: bible.book),
-                          );
-                          context.read<ChapterBloc>().add(
-                            UpdateChapter(chapterNumber: bible.chapter - 1),
-                          );
-                          context.read<VerseBloc>().add(
-                            UpdateVerse(verseNumber: bible.verse),
-                          );
+                          context.read<BookNumberBloc>().add(UpdateBook(bibleBookNumber: bible.book));
+                          context.read<ChapterBloc>().add(UpdateChapter(chapterNumber: bible.chapter - 1));
+                          context.read<VerseBloc>().add(UpdateVerse(verseNumber: bible.verse));
                           Navigator.pushNamed(context, '/main');
                         },
                       );

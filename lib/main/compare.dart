@@ -65,31 +65,6 @@ class CompareVersesSheet extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           const SizedBox(height: 4),
-          //(Globals.bibleVersionLanguage == 'lat')
-          //     ? GestureDetector(
-          //         onTap: () {
-          //           Navigator.pop(context);
-          //           showModalBottomSheet(
-          //             context: context,
-          //             isScrollControlled: true,
-          //             shape: const RoundedRectangleBorder(
-          //               borderRadius: BorderRadius.vertical(
-          //                 top: Radius.circular(20),
-          //               ),
-          //             ),
-          //             builder: (context) =>
-          //                 DictionaryWidget(bibleModel: bibleModel),
-          //           );
-          //         },
-          //         child: Text(
-          //           bibleModel.text,
-          //           textAlign: TextAlign.center,
-          //           style: TextStyle(
-          //             fontSize: 14,
-          //             color: colorScheme.onSurfaceVariant,
-          //           ),
-          //         ),
-          //       )
           Text(
             bibleModel.text,
             textAlign: TextAlign.center,
@@ -119,8 +94,6 @@ class CompareVersesSheet extends StatelessWidget {
                   itemCount: results.length,
                   itemBuilder: (context, index) {
                     final item = results[index];
-                    //final abbr = (item['version'] as String).toUpperCase();
-                    //final letter = abbr.isNotEmpty ? abbr[0] : '?';
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 8.0),
                       child: Card(
@@ -134,27 +107,6 @@ class CompareVersesSheet extends StatelessWidget {
                           ),
                         ),
                         child: ListTile(
-                          // leading: Padding(
-                          //   padding: const EdgeInsets.symmetric(vertical: 6.0),
-                          //   child: Container(
-                          //     width: 44,
-                          //     height: 44,
-                          //     decoration: BoxDecoration(
-                          //       color: colorScheme.primaryContainer,
-                          //       borderRadius: BorderRadius.circular(10),
-                          //     ),
-                          //     child: Center(
-                          //       child: Text(
-                          //         letter,
-                          //         style: TextStyle(
-                          //           color: colorScheme.onPrimaryContainer,
-                          //           fontWeight: FontWeight.bold,
-                          //           fontSize: 18,
-                          //         ),
-                          //       ),
-                          //     ),
-                          //   ),
-                          // ),
                           title: Text(
                             item['name'],
                             style: const TextStyle(fontWeight: FontWeight.bold),
@@ -174,7 +126,6 @@ class CompareVersesSheet extends StatelessWidget {
               },
             ),
           ),
-          // gap benieth the list of versions
           const SizedBox(height: 16),
         ],
       ),

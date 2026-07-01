@@ -14,7 +14,6 @@ import '../bloc/theme.dart';
 import '../search/search.dart';
 import '../theme/apptheme.dart';
 import '../theme/theme.dart';
-import '../dict/page.dart';
 import '../collections/bible.dart';
 import '../collections/booklist.dart';
 import '../collections/cache.dart';
@@ -67,8 +66,6 @@ void main() async {
     await ensureVersionLoaded(entry.key);
   }
 
-  // await clearAllData();
-
   //-------------------------------------------
   // Check if book list is loaded, if not load it
   //-------------------------------------------
@@ -77,7 +74,6 @@ void main() async {
   //-------------------------------------------
   // Check if words are loaded, if not load them
   //-------------------------------------------
-  //await ensureWordLoaded();
 
   runApp(const RunApp());
 }
@@ -197,45 +193,6 @@ Future<void> ensureVersionLoaded(String versionCode) async {
 }
 
 //-------------------------------------------
-// Ensure words are loaded: checks existing words and inserts from assets.
-//-------------------------------------------
-// Future<void> ensureWordLoaded() async {
-//   final alreadyLoaded = await isWordLoaded();
-//
-//   if (alreadyLoaded) {
-//     debugPrint('Words are already loaded.');
-//     return;
-//   }
-//
-//   debugPrint('Loading words...');
-//   final path = 'assets/words.json';
-//   final jsonString = await rootBundle.loadString(path);
-//   final List<dynamic> data = jsonDecode(jsonString);
-//
-//   final words = data.map((item) {
-//     return Dict()
-//       ..lat = item['lat']
-//       ..eng = item['eng'];
-//   }).toList();
-//
-//   await isar.writeTxn(() async {
-//     try {
-//       await isar.dicts.putAll(words);
-//     } catch (e) {
-//       debugPrint('Error inserting words: $e');
-//     }
-//   });
-// }
-
-//-------------------------------------------
-// Returns whether any word entries exist in Isar.
-//-------------------------------------------
-// Future<bool> isWordLoaded() async {
-//   final count = await isar.dicts.count();
-//   return count > 0;
-// }
-
-//-------------------------------------------
 // Returns whether the specified Bible version has at least the first verse.
 //-------------------------------------------
 Future<bool> isVersionLoaded(String versionCode) async {
@@ -281,9 +238,6 @@ Future<void> loadBibleVersion(String versionCode) async {
 //-------------------------------------------
 Future<void> clearAllData() async {
   await isar.writeTxn(() async {
-    //await isar.bibles.clear();
-    //await isar.caches.clear();
-    //await isar.bookLists.clear();
     debugPrint('All Isar collections have been cleared.');
   });
 }
